@@ -60,6 +60,7 @@ public class PlayerController : MonoBehaviour
     //Call all the updated player functions.
     private void Update()
     {
+        print(_DirectionAngle);
         MovePlayer();
         ReflectPlayer();
     }
@@ -78,7 +79,7 @@ public class PlayerController : MonoBehaviour
         Ray ray = new Ray(transform.position, transform.forward);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, Time.deltaTime * _MoveSpeed + 0.1f, _ReflectLayer))
+        if (Physics.Raycast(ray, out hit, Time.deltaTime * _MoveSpeed + 0.5f, _ReflectLayer))
         {
             //Show the normal of the plane
             Debug.DrawRay(transform.position, transform.forward);
