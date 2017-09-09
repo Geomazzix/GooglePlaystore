@@ -4,23 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    //enums
-    private enum Direction
-    {
-        straight,
-        left,
-        right
-    };
-    private enum FaceDirection
-    {
-        north,
-        west,
-        south,
-        east
-    };
 
-
-    //Inspector.
+#region Inspector
     [Header("Layers")]
     [SerializeField]
     private LayerMask _ReflectLayer;
@@ -37,14 +22,11 @@ public class PlayerController : MonoBehaviour
     private float _StartAngleMin = 30f;
     [SerializeField]
     private float _StartAngleMax = 30f, _DirectionAngle = 0f;
+    #endregion
 
-    [Header("Directions")]
-    [SerializeField]
-    private Direction _Direction = Direction.straight;
-
-
-    //Private members.
-    private FaceDirection _FaceDirection = FaceDirection.north;
+#region Private members
+    private float _CurrDirectionAngle;
+#endregion
 
 
     //Set a starting direction.
@@ -60,9 +42,9 @@ public class PlayerController : MonoBehaviour
     //Call all the updated player functions.
     private void Update()
     {
-        print(_DirectionAngle);
         MovePlayer();
         ReflectPlayer();
+        AdjustPlayerDirection();
     }
 
 
@@ -98,26 +80,27 @@ public class PlayerController : MonoBehaviour
     //Adjust the player direction to the direction he is supposed to be going.
     private void AdjustPlayerDirection()
     {
-
+        transform.eulerAngles += new Vector3(0, _CurrDirectionAngle * Time.deltaTime, 0);
     }
 
     
     //Check when the player enters a player created ball, when entered check the distance and calculate the rotation circle.s
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == _PlayerBalls)
+        //Make sure to fix the 9 to an appropraite layer.
+        if (other.gameObject.layer == 9)
         {
             Vector3 coreSide = transform.position - other.transform.position;
 
             if (coreSide.x > 0)
             {
                 //The x,y and z scale are all the same so I just use 1 here.
-                _DirectionAngle = other.transform.localScale.x * -_DirectionAngle;
+                _CurrDirectionAngle = other.transform.localScale.x * -_DirectionAngle;
             }
             else if (coreSide.x < 0)
             {
                 //The x,y and z scale are all the same so I just use 1 here.
-                _DirectionAngle = other.transform.localScale.x * _DirectionAngle;
+                _CurrDirectionAngle = other.transform.localScale.x * _DirectionAngle;
             }
             else
             {

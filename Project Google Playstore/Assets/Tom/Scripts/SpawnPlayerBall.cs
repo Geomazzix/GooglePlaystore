@@ -4,14 +4,22 @@ using UnityEngine;
 
 public class SpawnPlayerBall : MonoBehaviour
 {
+
+#region Inspector
     [SerializeField]
     private LayerMask _SpawnLayer;
 
     [SerializeField]
     private GameObject _Playerball;
 
+    [SerializeField]
+    private float _GrowSpeed = 0.03f;
+    #endregion
+
+#region private members
 
     private GameObject _SpawningPlayerBall;
+#endregion
 
 
     private void Update()
@@ -29,7 +37,7 @@ public class SpawnPlayerBall : MonoBehaviour
             //When a ball is being spawned make sure to scale him.
             if (Input.GetButton("Fire1"))
             {
-                _SpawningPlayerBall.transform.localScale += new Vector3(0.01f, 0.01f, 0.01f);
+                _SpawningPlayerBall.transform.localScale += new Vector3(_GrowSpeed, _GrowSpeed, _GrowSpeed);
             }
 
             //Make sure to reset the spawning ball.
