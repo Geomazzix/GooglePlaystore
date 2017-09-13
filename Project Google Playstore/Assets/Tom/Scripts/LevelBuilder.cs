@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class LevelBuilder : MonoBehaviour
 {
-    //[SerializeField]
-    //1private float _IntervalTime = 0.1f;
-
     [SerializeField]
     private GameObject _Player;
 
@@ -30,17 +27,14 @@ public class LevelBuilder : MonoBehaviour
         _LeftWallQ = new Queue<GameObject>();
         _RightWallQ = new Queue<GameObject>();
 
-        EnqueueArrays(_GroundQ, _GroundTiles);
-        EnqueueArrays(_LeftWallQ, _LeftWallTiles);
-        EnqueueArrays(_RightWallQ, _RightWallTiles);
-
-        //Start the coroutine
-        //InvokeRepeating("MoveTiles", 0f, _IntervalTime);
+        EnqueueArray(_GroundQ, _GroundTiles);
+        EnqueueArray(_LeftWallQ, _LeftWallTiles);
+        EnqueueArray(_RightWallQ, _RightWallTiles);
     }
 
 
     //Enqueue all the tiles.
-    private void EnqueueArrays(Queue<GameObject> queue, GameObject[] array)
+    private void EnqueueArray(Queue<GameObject> queue, GameObject[] array)
     {
         for (int i = 0; i < array.Length; i++)
         {

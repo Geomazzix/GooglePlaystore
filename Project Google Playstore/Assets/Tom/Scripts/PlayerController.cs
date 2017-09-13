@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+    TODO: Make sure the player can't turn or at least see the skybox.
+*/
+
 public class PlayerController : MonoBehaviour
 {
 
@@ -14,18 +18,43 @@ public class PlayerController : MonoBehaviour
     private LayerMask _PlayerBalls;
 
     [Header("Forces")]
+    [Tooltip("This movespeed will be the speed at which he starts accelerating.")]
     [SerializeField]
-    private float _MoveSpeed = 10f;
+    private float _MoveSpeed;
+    [Tooltip("The starting speed is the maximum speed he starts at.")]
+    [SerializeField]
+    private float _StartingMoveSpeed;
+    [Tooltip("The force which he accelerates with towards the starting speed.")]
+    [SerializeField]
+    private float _StartingAcceleration, _Acceleration;
 
     [Header("Angles")]
     [SerializeField]
     private float _StartAngleMin = 30f;
     [SerializeField]
     private float _StartAngleMax = 30f, _DirectionAngle = 0f;
-    #endregion
+
+    [Header("Maximum angles.")]
+    [SerializeField]
+    private Vector3 _MaxLeftAngle;
+    [SerializeField]
+    private Vector3 _MaxRightAngle;
+
+    [Header("The starting point of the playerrun.")]
+    [SerializeField]
+    private Transform _StartingPoint;
+#endregion
 
 #region Private members
-    private float _CurrDirectionAngle;
+    private float _CurrDirectionAngle, _Score = 0f;
+    private bool _AngleChanged = false;
+#endregion
+
+#region Properties
+    public float Score
+    {
+        get { return _Score; }
+    }
 #endregion
 
 
@@ -45,12 +74,19 @@ public class PlayerController : MonoBehaviour
         MovePlayer();
         ReflectPlayer();
         AdjustPlayerDirection();
+        UpdateScore();
     }
 
 
     //Moves the player (made it for readability code).
     private void MovePlayer()
     {
+        if(_MoveSpeed < _StartingMoveSpeed)
+        {
+            _MoveSpeed = Mathf.Lerp(_MoveSpeed, _StartingMoveSpeed, _StartingAcceleration * Time.deltaTime);
+        }
+
+        _MoveSpeed += _Acceleration * Time.deltaTime;
         transform.Translate(transform.forward * _MoveSpeed * Time.deltaTime, Space.World);
     }
 
@@ -74,6 +110,13 @@ public class PlayerController : MonoBehaviour
             float rot = Mathf.Atan2(reflectDir.x, reflectDir.z) * Mathf.Rad2Deg;
             transform.eulerAngles = new Vector3(0, rot, 0);
         }
+        else
+        {
+            /*transform.eulerAngles = new Vector3(
+                Mathf.Clamp(transform.eulerAngles.x, _MaxLeftAngle.x, _MaxRightAngle.x),
+                Mathf.Clamp(transform.eulerAngles.y, _MaxLeftAngle.y, _MaxRightAngle.y),
+                Mathf.Clamp(transform.eulerAngles.z, _MaxLeftAngle.z, _MaxRightAngle.z));*/
+        }
     }
 
 
@@ -84,28 +127,65 @@ public class PlayerController : MonoBehaviour
     }
 
     
+    //Keeps adding score according to your distance.
+    private void UpdateScore()
+    {
+        float traveled = transform.position.z - _StartingPoint.position.z;
+        if (traveled > 0)
+        {
+            _Score = traveled;
+        }
+    }
+
+
     //Check when the player enters a player created ball, when entered check the distance and calculate the rotation circle.s
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         //Make sure to fix the 9 to an appropraite layer.
-        if (other.gameObject.layer == 9)
+        if (other.gameObject.CompareTag("PlayerBall"))
         {
             Vector3 coreSide = transform.position - other.transform.position;
 
-            if (coreSide.x > 0)
+            if(!_AngleChanged)
             {
-                //The x,y and z scale are all the same so I just use 1 here.
-                _CurrDirectionAngle = other.transform.localScale.x * -_DirectionAngle;
-            }
-            else if (coreSide.x < 0)
-            {
-                //The x,y and z scale are all the same so I just use 1 here.
-                _CurrDirectionAngle = other.transform.localScale.x * _DirectionAngle;
-            }
-            else
-            {
-                _DirectionAngle = 0f;
+                if (coreSide.x < 0)
+                {
+                    //The x,y and z scale are all the same so I just use 1 here.
+                    _CurrDirectionAngle = other.transform.localScale.x * -_DirectionAngle;
+                    _AngleChanged = true;
+                }
+                else if (coreSide.x > 0)
+                {
+                    //The x,y and z scale are all the same so I just use 1 here.
+                    _CurrDirectionAngle = other.transform.localScale.x * _DirectionAngle;
+                    _AngleChanged = true;
+                }
+                else
+                {
+                    _DirectionAngle = 0f;
+                }
             }
         }
+        else if(other.gameObject.CompareTag("DeadlyObstacle"))
+        {
+            Die();
+        }
+    }
+
+
+
+    private void OnTriggerExit(Collider other)
+    {
+        _AngleChanged = false;
+    }
+
+
+    //Destroys the player.
+    private void Die()
+    {
+        //Spawn in particle system for playerdeath.
+        //Send score to scoremanager.
+        //Update UI by calling the player death delegate.
+        gameObject.SetActive(false);
     }
 }

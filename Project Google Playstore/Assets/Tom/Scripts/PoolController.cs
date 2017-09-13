@@ -2,49 +2,47 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class PoolObjectType
-{
-    public GameObject[] PoolObject;
-}
-
 public class PoolController : MonoBehaviour
 {
     [Tooltip("Store here all the different pool objects in.")]
     [SerializeField]
-    private PoolObjectType[] _DifferentPoolObjects;
-
+    private GameObject[] _PoolObjects;
 
     //Activates an entity.
-    public void ActivateEntity(GameObject requestedEntity, Vector3 position, Vector3 eulerAngle)
+    public void ActivatePoolObject(Vector3 position, Vector3 eulerAngle, Vector3 scale)
     {
-        //Check if the requeste object is possible to spawn.
-        if(CheckRequestedObject(requestedEntity))
+        for (int i = 0; i < _PoolObjects.Length; i++)
         {
-            requestedEntity.transform.position = position;
-            requestedEntity.transform.eulerAngles = eulerAngle;
-            requestedEntity.SetActive(true);
+            if(!_PoolObjects[i].gameObject.activeInHierarchy)
+            {
+                _PoolObjects[i].transform.position = position;
+                _PoolObjects[i].transform.eulerAngles = eulerAngle;
+                _PoolObjects[i].transform.localScale = scale;
+                _PoolObjects[i].gameObject.SetActive(true);
+                break;
+            }
         }
     }
 
-    //Checks if the requested object is allowed or possible to spawn.
-    public bool CheckRequestedObject(GameObject requestedEntity)
+
+    //Deactivates an entity.
+    public void DeactivatePoolObject(GameObject gameObject)
     {
-        for (int i = 0; i < _DifferentPoolObjects.Length; i++)
+        gameObject.SetActive(false);
+    }
+
+
+    //Check if the requested object is available in the pool.
+    public bool IsPoolObjectInPool(GameObject requestedPoolObject)
+    {
+        for (int i = 0; i < _PoolObjects.Length; i++)
         {
-            if (_DifferentPoolObjects[i].PoolObject[0] == requestedEntity)
+            if(_PoolObjects[i] == requestedPoolObject)
             {
                 return true;
             }
         }
 
         return false;
-    }
-
-
-    //Deactivates an entity.
-    public void DeactivateEntity(GameObject gameObject)
-    {
-
     }
 }
