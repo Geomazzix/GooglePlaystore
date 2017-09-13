@@ -13,9 +13,6 @@ public class PlayerController : MonoBehaviour
     [Header("Layers")]
     [SerializeField]
     private LayerMask _ReflectLayer;
-    
-    [SerializeField]
-    private LayerMask _PlayerBalls;
 
     [Header("Forces")]
     [Tooltip("This movespeed will be the speed at which he starts accelerating.")]
@@ -103,7 +100,6 @@ public class PlayerController : MonoBehaviour
             Debug.DrawRay(transform.position, transform.forward);
 
             //Reflect the electricity
-           
             Vector3 reflectDir = Vector3.Reflect(ray.direction, hit.normal);
 
             //Calculate the turn of the electricity
@@ -112,10 +108,9 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            /*transform.eulerAngles = new Vector3(
-                Mathf.Clamp(transform.eulerAngles.x, _MaxLeftAngle.x, _MaxRightAngle.x),
-                Mathf.Clamp(transform.eulerAngles.y, _MaxLeftAngle.y, _MaxRightAngle.y),
-                Mathf.Clamp(transform.eulerAngles.z, _MaxLeftAngle.z, _MaxRightAngle.z));*/
+            float eulerAnglesY = Mathf.Clamp(transform.eulerAngles.y, _MaxLeftAngle.y, _MaxRightAngle.y);
+            transform.rotation = Quaternion.Euler(new Vector3(0, eulerAnglesY, 0));
+            Debug.Log("Eulerrotation: " + transform.eulerAngles);
         }
     }
 

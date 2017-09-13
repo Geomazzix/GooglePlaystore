@@ -66,10 +66,8 @@ public class ObstacleController : MonoBehaviour
     {
         if(other.gameObject.CompareTag("DeadlyObstacle"))
         {
-            print("dwdewd");
             if (_ObstaclePool.IsPoolObjectInPool(other.gameObject))
             {
-                print("wedwedewferferfwwef");
                 _ObstaclePool.DeactivatePoolObject(other.gameObject);
             }
         }

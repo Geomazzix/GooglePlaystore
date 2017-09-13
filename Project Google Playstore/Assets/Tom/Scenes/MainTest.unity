@@ -572,9 +572,6 @@ MonoBehaviour:
   _ReflectLayer:
     serializedVersion: 2
     m_Bits: 256
-  _PlayerBalls:
-    serializedVersion: 2
-    m_Bits: 512
   _MoveSpeed: 0
   _StartingMoveSpeed: 5
   _StartingAcceleration: 1
@@ -582,8 +579,8 @@ MonoBehaviour:
   _StartAngleMin: 25
   _StartAngleMax: 25
   _DirectionAngle: 20
-  _MaxLeftAngle: {x: -90, y: -90, z: -90}
-  _MaxRightAngle: {x: 30, y: 30, z: 30}
+  _MaxLeftAngle: {x: -45, y: -45, z: -45}
+  _MaxRightAngle: {x: 45, y: 45, z: 45}
   _StartingPoint: {fileID: 571993594}
 --- !u!54 &47006990
 Rigidbody:
@@ -725,7 +722,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _SpawnLayer:
     serializedVersion: 2
-    m_Bits: 1024
+    m_Bits: 1536
   _Playerball: {fileID: 1470750695384854, guid: b99bb973b72b5444bad09f516e2a2a9a,
     type: 2}
   _GrowSpeed: 0.05
