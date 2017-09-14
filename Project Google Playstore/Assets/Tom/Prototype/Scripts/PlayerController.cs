@@ -6,6 +6,8 @@ using UnityEngine;
     TODO: Make sure the player can't turn or at least see the skybox.
 */
 
+public delegate void PlayerDeadDelegate();
+
 public class PlayerController : MonoBehaviour
 {
 
@@ -18,12 +20,6 @@ public class PlayerController : MonoBehaviour
     [Tooltip("This movespeed will be the speed at which he starts accelerating.")]
     [SerializeField]
     private float _MoveSpeed;
-    [Tooltip("The starting speed is the maximum speed he starts at.")]
-    [SerializeField]
-    private float _StartingMoveSpeed;
-    [Tooltip("The force which he accelerates with towards the starting speed.")]
-    [SerializeField]
-    private float _StartingAcceleration, _Acceleration;
 
     [Header("Angles")]
     [SerializeField]
@@ -40,11 +36,15 @@ public class PlayerController : MonoBehaviour
     [Header("The starting point of the playerrun.")]
     [SerializeField]
     private Transform _StartingPoint;
+
+    [SerializeField]
+    private WorldController _WorldController;
 #endregion
 
 #region Private members
     private float _CurrDirectionAngle, _Score = 0f;
     private bool _AngleChanged = false;
+    public event PlayerDeadDelegate PlayerDeadEvent;
 #endregion
 
 #region Properties
@@ -55,13 +55,24 @@ public class PlayerController : MonoBehaviour
 #endregion
 
 
-    //Set a starting direction.
+    //Handle the starting values and subscribtions of the player.
     private void Start()
     {
+        //Set a random start direction.
         transform.eulerAngles = new Vector3(
             transform.eulerAngles.x, 
             Mathf.Round(Random.Range(transform.eulerAngles.y - _StartAngleMin, transform.eulerAngles.y + _StartAngleMax)), 
             transform.eulerAngles.z);
+
+        //Subscribe the player to the worldcontroller so he knows the acceleration speed.
+        if(_WorldController != null)
+        {
+            _WorldController.UpdateWorldSpeedEvent += UpdateMoveSpeed;
+        }
+        else
+        {
+            Debug.LogError(gameObject.name + " doesn't have a world controller.");
+        }
     }
 
 
@@ -78,13 +89,14 @@ public class PlayerController : MonoBehaviour
     //Moves the player (made it for readability code).
     private void MovePlayer()
     {
-        if(_MoveSpeed < _StartingMoveSpeed)
-        {
-            _MoveSpeed = Mathf.Lerp(_MoveSpeed, _StartingMoveSpeed, _StartingAcceleration * Time.deltaTime);
-        }
-
-        _MoveSpeed += _Acceleration * Time.deltaTime;
         transform.Translate(transform.forward * _MoveSpeed * Time.deltaTime, Space.World);
+    }
+
+
+    //Updates the accelerationspeed from the worldcontroller.
+    private void UpdateMoveSpeed(float speed)
+    {
+        _MoveSpeed = speed;
     }
 
 
@@ -108,9 +120,9 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            float eulerAnglesY = Mathf.Clamp(transform.eulerAngles.y, _MaxLeftAngle.y, _MaxRightAngle.y);
-            transform.rotation = Quaternion.Euler(new Vector3(0, eulerAnglesY, 0));
-            Debug.Log("Eulerrotation: " + transform.eulerAngles);
+            //float eulerAnglesY = Mathf.Clamp(transform.eulerAngles.y, _MaxLeftAngle.y, _MaxRightAngle.y);
+            //transform.rotation = Quaternion.Euler(new Vector3(0, eulerAnglesY, 0));
+            //Debug.Log("Eulerrotation: " + transform.eulerAngles);
         }
     }
 
@@ -181,6 +193,12 @@ public class PlayerController : MonoBehaviour
         //Spawn in particle system for playerdeath.
         //Send score to scoremanager.
         //Update UI by calling the player death delegate.
+
+        if(PlayerDeadEvent != null)
+        {
+            PlayerDeadEvent.Invoke();
+        }
+
         gameObject.SetActive(false);
     }
 }

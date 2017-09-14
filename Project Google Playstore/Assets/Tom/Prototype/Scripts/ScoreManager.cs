@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 /*
 ScoreManager: Keeps track of all the player scores. Can be called to get highscores or to send scores to the highsore list. 
 */
 
 public class ScoreManager : MonoBehaviour
 {
+    [SerializeField]
+    private IOManager _IOManager;
+
     private float _PlayerScore;
 
 
