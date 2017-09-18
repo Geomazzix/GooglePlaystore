@@ -1,4 +1,8 @@
 sceneSetups:
+<<<<<<< HEAD
 - path: Assets/Tom/Final/Scenes/GameScene.unity
+=======
+- path: Assets/David/Scene/Maintest_David.unity
+>>>>>>> David
   isLoaded: 1
   isActive: 1
