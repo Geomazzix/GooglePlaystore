@@ -6,8 +6,6 @@ using UnityEngine;
     TODO: Make sure the player can't turn or at least see the skybox.
 */
 
-public delegate void PlayerDeadDelegate();
-
 public class PlayerController : MonoBehaviour
 {
 
@@ -26,25 +24,17 @@ public class PlayerController : MonoBehaviour
     private float _StartAngleMin = 30f;
     [SerializeField]
     private float _StartAngleMax = 30f, _DirectionAngle = 0f;
-
+    /*
     [Header("Maximum angles.")]
     [SerializeField]
     private Vector3 _MaxLeftAngle;
     [SerializeField]
-    private Vector3 _MaxRightAngle;
-
-    [Header("The starting point of the playerrun.")]
-    [SerializeField]
-    private Transform _StartingPoint;
-
-    [SerializeField]
-    private WorldController _WorldController;
+    private Vector3 _MaxRightAngle;*/
 #endregion
 
 #region Private members
     private float _CurrDirectionAngle, _Score = 0f;
     private bool _AngleChanged = false;
-    public event PlayerDeadDelegate PlayerDeadEvent;
 #endregion
 
 #region Properties
@@ -63,16 +53,6 @@ public class PlayerController : MonoBehaviour
             transform.eulerAngles.x, 
             Mathf.Round(Random.Range(transform.eulerAngles.y - _StartAngleMin, transform.eulerAngles.y + _StartAngleMax)), 
             transform.eulerAngles.z);
-
-        //Subscribe the player to the worldcontroller so he knows the acceleration speed.
-        if(_WorldController != null)
-        {
-            _WorldController.UpdateWorldSpeedEvent += UpdateMoveSpeed;
-        }
-        else
-        {
-            Debug.LogError(gameObject.name + " doesn't have a world controller.");
-        }
     }
 
 
@@ -82,7 +62,7 @@ public class PlayerController : MonoBehaviour
         MovePlayer();
         ReflectPlayer();
         AdjustPlayerDirection();
-        UpdateScore();
+        //UpdateScore();
     }
 
 
@@ -133,7 +113,7 @@ public class PlayerController : MonoBehaviour
         transform.eulerAngles += new Vector3(0, _CurrDirectionAngle * Time.deltaTime, 0);
     }
 
-    
+    /*
     //Keeps adding score according to your distance.
     private void UpdateScore()
     {
@@ -142,7 +122,7 @@ public class PlayerController : MonoBehaviour
         {
             _Score = traveled;
         }
-    }
+    }*/
 
 
     //Check when the player enters a player created ball, when entered check the distance and calculate the rotation circle.s
@@ -193,12 +173,5 @@ public class PlayerController : MonoBehaviour
         //Spawn in particle system for playerdeath.
         //Send score to scoremanager.
         //Update UI by calling the player death delegate.
-
-        if(PlayerDeadEvent != null)
-        {
-            PlayerDeadEvent.Invoke();
-        }
-
-        gameObject.SetActive(false);
     }
 }

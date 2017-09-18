@@ -28,15 +28,6 @@ public class WorldController : MonoBehaviour
     //Subscribes to the player.
     private void Start()
     {
-        if(_Player != null)
-        {
-            _Player.PlayerDeadEvent += PlayerDead;
-        }
-        else
-        {
-            Debug.LogError(gameObject.name + " does not have an assigned player.");
-        }
-
         if(_GameController != null)
         {
             _GameController.StartNewGameEvent += StartGame;
